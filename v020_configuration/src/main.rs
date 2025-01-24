@@ -1,12 +1,9 @@
 use std::collections::BTreeMap as Map;
 
-
-
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let mut candidats: Map<&str, u32> = Map::new();
     candidats.insert("blanc", 0 );
-    candidats.insert("cd1", 0 );
     candidats.insert("nul", 0 );
 
     let mut votants = vec!["tux".to_string()];
