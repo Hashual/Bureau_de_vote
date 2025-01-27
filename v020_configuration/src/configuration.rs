@@ -1,5 +1,7 @@
+use clap::Parser;
 
-
-struct Configuration {
-    pub candidates: Vec<String>,
+#[derive(Parser)]
+pub struct Configuration {
+    #[arg(short, long, required = true, num_args = 1.. )]
+    pub candidats: Vec<String>,
 }
