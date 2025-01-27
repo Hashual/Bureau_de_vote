@@ -1,25 +1,28 @@
 use std::collections::BTreeMap as Map;
+use v020_configuration::configuration::Configuration;
+use clap::Parser;
+
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    let config = Configuration::parse();
+
     let mut candidats: Map<&str, u32> = Map::new();
     candidats.insert("blanc", 0 );
     candidats.insert("nul", 0 );
 
-    let mut votants = vec!["tux".to_string()];
+    for candidat in config.candidats.iter() {
+        candidats.insert(candidat.as_str(), 0 );
+    }
 
+    let mut votants = vec!["tux".to_string()];
 
     loop {
 
         println!("Listes des commandes : voter, votants, scores");
         let mut input: String = String::new();
         std::io::stdin().read_line(&mut input)?;
-        let words = input.split_whitespace().collect::<Vec<_>>();
-
-        
-
-        
-
+        let words = input.split_whitespace().collect::<Vec<_>>();        
 
         match words[0] {
             "voter" => {
