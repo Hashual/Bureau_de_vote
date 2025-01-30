@@ -1,0 +1,1 @@
+C:\Users\dodo2\Documents\Ecole\BUT\ informatique\BUT2\S4\Rust\Bureau_de_vote\v020_configuration\target\debug\libv020_configuration.rlib: C:\Users\dodo2\Documents\Ecole\BUT\ informatique\BUT2\S4\Rust\Bureau_de_vote\v020_configuration\src\configuration.rs C:\Users\dodo2\Documents\Ecole\BUT\ informatique\BUT2\S4\Rust\Bureau_de_vote\v020_configuration\src\lib.rs

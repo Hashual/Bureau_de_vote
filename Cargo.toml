@@ -1,0 +1,9 @@
+[workspace]
+
+resolver = "2"
+
+members = [ 
+    "v020_configuration",
+    "v021_app_builder",
+    "v030_domain"
+]
