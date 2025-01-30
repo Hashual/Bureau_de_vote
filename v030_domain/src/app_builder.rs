@@ -1,22 +1,19 @@
 use std::collections::BTreeMap as Map;
-use crate::{configuration::Configuration, domain::{Candidate, Score, Scoreboard, VotingMachine}};
+use crate::{configuration::Configuration, domain::{BallotPaper, Candidate, Score, Scoreboard, Voter, VotingMachine}};
 
 pub async fn run_app(configuration: Configuration) -> anyhow::Result<()>{
 
-    let scoreboard: Scoreboard; 
-    let votingMachine = VotingMachine::new(Vec::new());
-
-    
-    let blanc = Candidate("blanc".to_string());
-    let nul = Candidate("nul".to_string());
+    let mut votingMachine = VotingMachine::new(Vec::new());
     let initial_score = Score(0);
 
-    let mut candidats: Map<Candidate, Score> = Map::new();
-    candidats.insert(blanc, initial_score.clone()); 
-    candidats.insert(nul,initial_score.clone());
+    let mut scoreboard: Scoreboard= Scoreboard{
+        scores: Map::new(),
+        blank_score: initial_score.clone(),
+        invalid_score: initial_score.clone(),
+    };
 
     for candidat in configuration.candidats.iter() {
-        candidats.insert(Candidate(candidat.clone()), initial_score.clone());
+        scoreboard.scores.insert(Candidate(candidat.clone()), initial_score.clone());
     }
 
     let mut votants = vec!["tux".to_string()];
@@ -29,6 +26,10 @@ pub async fn run_app(configuration: Configuration) -> anyhow::Result<()>{
         let words = input.split_whitespace().collect::<Vec<_>>();        
 
         match words[0] {
+            "test" => {
+                
+            },
+
             "voter" => {
                            },
             "votants" => {
@@ -46,7 +47,7 @@ pub async fn run_app(configuration: Configuration) -> anyhow::Result<()>{
             },
             "scores" => {
                 println!("");
-                for (candidat, score) in candidats.iter() {
+                for (candidat, score) in scoreboard.scores.iter() {
                     println!("{} : {}", candidat.0, score.0);
                 }
                 println!("");
