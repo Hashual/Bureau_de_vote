@@ -1,4 +1,4 @@
-use crate::{configuration::Configuration, domain::{BallotPaper, Candidate, VoteOutcome, Voter, VotingMachine}};
+use crate::{configuration::Configuration, domain::{BallotPaper, Candidate, VoteOutcome, Voter, VotingMachine}, storages::memory::MemoryStore};
 
 pub async fn run_app(configuration: Configuration) -> anyhow::Result<()>{
 
@@ -63,6 +63,9 @@ pub async fn run_app(configuration: Configuration) -> anyhow::Result<()>{
                 }
                 println!("");
 
+            },
+            "store" => {
+                println!("Sauvegarde du vote en cours");
             },
 
             _ => {
