@@ -66,13 +66,13 @@ impl VotingMachine {
             self.scoreboard.blank_score.0 += 1;
             return VoteOutcome::BlankVote(ballot_paper.voter);
         }
-
+        
         let candidate = ballot_paper.candidate.unwrap();
         if self.scoreboard.scores.contains_key(&candidate) {
             self.scoreboard.scores.get_mut(&candidate).unwrap().0 += 1;
             return VoteOutcome::AcceptedVote(ballot_paper.voter, candidate);
         }
-
+        
         self.scoreboard.invalid_score.0 += 1;
         return VoteOutcome::InvalidVote(ballot_paper.voter);
         

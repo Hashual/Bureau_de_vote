@@ -1,57 +1,67 @@
-use std::collections::BTreeMap as Map;
-use crate::{configuration::Configuration, domain::{BallotPaper, Candidate, Score, Scoreboard, Voter, VotingMachine}};
+use crate::{configuration::Configuration, domain::{BallotPaper, Candidate, VoteOutcome, Voter, VotingMachine}};
 
 pub async fn run_app(configuration: Configuration) -> anyhow::Result<()>{
 
-    let mut votingMachine = VotingMachine::new(Vec::new());
-    let initial_score = Score(0);
-
-    let mut scoreboard: Scoreboard= Scoreboard{
-        scores: Map::new(),
-        blank_score: initial_score.clone(),
-        invalid_score: initial_score.clone(),
-    };
-
+    let mut candidats: Vec<Candidate> =  vec![];
+    
     for candidat in configuration.candidats.iter() {
-        scoreboard.scores.insert(Candidate(candidat.clone()), initial_score.clone());
+        candidats.push(Candidate(candidat.clone()));
     }
-
-    let mut votants = vec!["tux".to_string()];
+    
+    let mut votingMachine = VotingMachine::new(candidats);
 
     loop {
-
         println!("Listes des commandes : voter, votants, scores");
         let mut input: String = String::new();
         std::io::stdin().read_line(&mut input)?;
         let words = input.split_whitespace().collect::<Vec<_>>();        
 
         match words[0] {
-            "test" => {
-                
-            },
-
             "voter" => {
-                           },
+                let candidat: Option<Candidate> = if words.len() == 2 {
+                    None
+                } else {
+                    Some(Candidate(words[2].to_string()))
+                };
+
+                let ballotPaper: BallotPaper =  BallotPaper{
+                    voter : Voter(words[1].to_string()),
+                    candidate : candidat,
+                };
+                let result = votingMachine.vote(ballotPaper);
+                match result {
+                    VoteOutcome::AcceptedVote(voter, candidate) => {
+                        println!("{} a voté pour {}", voter.0, candidate.0);
+                    },
+                    VoteOutcome::BlankVote(voter) => {
+                        println!("{} a voté blanc", voter.0);
+                    },
+                    VoteOutcome::InvalidVote(voter) => {
+                        println!("{} a voté nul", voter.0);
+                    },
+                    VoteOutcome::HasAlreadyVoted(voter) => {
+                        println!("{} a déjà voté", voter.0);
+                    },
+                };
+
+            },
             "votants" => {
                 println!("");
-                println!("nb votants : {}", votants.len());
-                println!("");
-                for votant in votants.iter() {
-                    println!("{}", votant);
+                for voter in votingMachine.get_voters().0.iter() {
+                    println!("{}", voter.0);
                 }
-                println!("");
-                votingMachine.get_voters();
 
 
 
             },
             "scores" => {
                 println!("");
-                for (candidat, score) in scoreboard.scores.iter() {
+                println!("Votes blancs : {}", votingMachine.get_scoreboard().blank_score.0);
+                println!("Votes nuls : {}", votingMachine.get_scoreboard().invalid_score.0);
+                for (candidat, score) in votingMachine.get_scoreboard().scores.iter() {
                     println!("{} : {}", candidat.0, score.0);
                 }
                 println!("");
-                votingMachine.get_scoreboard();
 
             },
 
