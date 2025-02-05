@@ -1,4 +1,4 @@
-use crate::{configuration::Configuration, domain::{BallotPaper, Candidate, VoteOutcome, Voter, VotingMachine}, storages::memory::MemoryStore};
+use crate::{configuration::Configuration, domain::{BallotPaper, Candidate, VoteOutcome, Voter, VotingMachine}, storage::Storage, storages::memory::MemoryStore};
 
 pub async fn run_app(configuration: Configuration) -> anyhow::Result<()>{
 
@@ -8,9 +8,11 @@ pub async fn run_app(configuration: Configuration) -> anyhow::Result<()>{
         candidats.push(Candidate(candidat.clone()));
     }
     
-    let mut votingMachine = VotingMachine::new(candidats);
+    let votingMachine_init = VotingMachine::new(candidats);
+    let mut memory  = MemoryStore::new(votingMachine_init).await?; 
 
     loop {
+        let mut votingMachine = memory.get_voting_machine().await?;
         println!("Listes des commandes : voter, votants, scores");
         let mut input: String = String::new();
         std::io::stdin().read_line(&mut input)?;
@@ -43,6 +45,7 @@ pub async fn run_app(configuration: Configuration) -> anyhow::Result<()>{
                         println!("{} a déjà voté", voter.0);
                     },
                 };
+                memory.put_voting_machine(votingMachine).await?;
 
             },
             "votants" => {
