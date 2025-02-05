@@ -1,0 +1,5 @@
+C:\Users\dodo2\Documents\Ecole\BUT informatique\BUT2\S4\Rust\Bureau_de_vote\target\debug\deps\libv041_file-adcd1406a459c858.rmeta: v041_file\src/main.rs
+
+C:\Users\dodo2\Documents\Ecole\BUT informatique\BUT2\S4\Rust\Bureau_de_vote\target\debug\deps\v041_file-adcd1406a459c858.d: v041_file\src/main.rs
+
+v041_file\src/main.rs:
