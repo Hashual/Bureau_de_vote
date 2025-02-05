@@ -9,19 +9,23 @@ pub struct Candidate(pub String);
 
 #[derive(Clone)]
 pub struct Score(pub usize);
+#[derive(Clone)]
 pub struct AttendenceSheet(pub Set<Voter>);
 
+#[derive(Clone)]
 pub struct Scoreboard{
     pub scores: Map<Candidate, Score>,
     pub blank_score: Score,
     pub invalid_score:Score,
 }
 
+#[derive(Clone)]
 pub struct BallotPaper{
     pub voter: Voter,
     pub candidate: Option<Candidate>,
 }
 
+#[derive(Debug, PartialEq)]
 pub enum VoteOutcome{
     AcceptedVote(Voter, Candidate),
     BlankVote(Voter),
@@ -29,6 +33,7 @@ pub enum VoteOutcome{
     HasAlreadyVoted(Voter),
 }
 
+#[derive(Clone)]
 pub struct VotingMachine {
     voters: AttendenceSheet,
     scoreboard: Scoreboard,
@@ -85,4 +90,71 @@ impl VotingMachine {
     pub fn get_voters(&self) -> &AttendenceSheet {
         return &self.voters;
     }
+}
+#[cfg(test)]
+mod tests {
+    use crate::domain::{BallotPaper, Candidate, VoteOutcome, Voter, VotingMachine};
+
+    # [test]
+    fn it_works() {
+        assert_eq!(1 + 1,2);
+    }
+
+    # [test]
+    fn test_voter_un_votant_ne_peut_voter_qu_une_seule_fois() {
+        let candidats = vec![Candidate("A".to_string()), Candidate("B".to_string())];
+        let mut machine = VotingMachine::new(candidats);
+        let voter = Voter("Alice".to_string());
+        let candidat = Candidate("A".to_string());
+        let ballot_paper = BallotPaper{
+            voter: voter.clone(),
+            candidate: Some(candidat.clone()),
+        };
+        let result = machine.vote(ballot_paper.clone());
+        assert_eq!(result, VoteOutcome::AcceptedVote(voter.clone(), candidat.clone()));
+        let result = machine.vote(ballot_paper);
+        assert_eq!(result, VoteOutcome::HasAlreadyVoted(voter.clone()));
+    }
+
+    # [test]
+    fn test_voter_un_votant_peut_voter_pour_un_candidat() {
+        let candidats = vec![Candidate("A".to_string()), Candidate("B".to_string())];
+        let mut machine = VotingMachine::new(candidats);
+        let voter = Voter("Alice".to_string());
+        let candidat = Candidate("A".to_string());
+        let ballot_paper = BallotPaper{
+            voter: voter.clone(),
+            candidate: Some(candidat.clone()),
+        };
+        let result = machine.vote(ballot_paper);
+        assert_eq!(result, VoteOutcome::AcceptedVote(voter.clone(), candidat.clone()));
+    }
+
+    # [test]
+    fn test_voter_un_votant_peut_voter_blanc() {
+        let candidats = vec![Candidate("A".to_string()), Candidate("B".to_string())];
+        let mut machine = VotingMachine::new(candidats);
+        let voter = Voter("Alice".to_string());
+        let ballot_paper = BallotPaper{
+            voter: voter.clone(),
+            candidate: None,
+        };
+        let result = machine.vote(ballot_paper);
+        assert_eq!(result, VoteOutcome::BlankVote(voter.clone()));
+    }
+    
+    # [test]
+    fn test_voter_un_votant_peut_voter_nul() {
+        let candidats = vec![Candidate("A".to_string()), Candidate("B".to_string())];
+        let mut machine = VotingMachine::new(candidats);
+        let voter = Voter("Alice".to_string());
+        let candidat = Candidate("C".to_string());
+        let ballot_paper = BallotPaper{
+            voter: voter.clone(),
+            candidate: Some(candidat.clone()),
+        };
+        let result = machine.vote(ballot_paper);
+        assert_eq!(result, VoteOutcome::InvalidVote(voter.clone()));
+    }
+
 }
