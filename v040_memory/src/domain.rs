@@ -7,12 +7,12 @@ pub struct Voter(pub String);
 #[derive(Eq, PartialEq, PartialOrd, Ord, Clone, Debug)]
 pub struct Candidate(pub String);
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Score(pub usize);
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct AttendenceSheet(pub Set<Voter>);
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Scoreboard{
     pub scores: Map<Candidate, Score>,
     pub blank_score: Score,
@@ -33,7 +33,7 @@ pub enum VoteOutcome{
     HasAlreadyVoted(Voter),
 }
 
-#[derive(Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct VotingMachine {
     voters: AttendenceSheet,
     scoreboard: Scoreboard,
