@@ -1,11 +1,18 @@
 use std::collections::BTreeMap as Map;
 use std::collections::BTreeSet as Set;
+use std::fmt;
 
 #[derive(Eq, PartialEq, PartialOrd, Ord, Clone, Debug)]
 pub struct Voter(pub String);
 
 #[derive(Eq, PartialEq, PartialOrd, Ord, Clone, Debug)]
 pub struct Candidate(pub String);
+
+impl fmt::Display for Candidate {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self)
+    }
+}
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Score(pub usize);
@@ -58,6 +65,12 @@ impl VotingMachine {
         Self {
             voters: AttendenceSheet(Set::new()),
             scoreboard: Scoreboard::new(candidates),
+        }
+    }
+    pub fn recover_from(voters: AttendenceSheet, scoreboard: Scoreboard) -> Self {
+        Self {
+            voters,
+            scoreboard,
         }
     }
 
