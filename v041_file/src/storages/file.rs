@@ -117,3 +117,35 @@ impl From<VotingMachineDao> for VotingMachine {
         return VotingMachine::recover_from(domain::AttendenceSheet(voters), machine_dao.scoreboard.into());
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::domain::{Candidate, VotingMachine};
+
+    #[tokio::test]
+    async fn machine_retourne_par_get_est_la_meme_que_put() {
+        let candidates = vec![Candidate("A".to_string()), Candidate("B".to_string())];
+        let machine = VotingMachine::new(candidates);
+        let mut store = FileStore::create(machine.clone(), "test.json").await.unwrap();
+        let machine2 = store.get_voting_machine().await.unwrap();
+        assert_eq!(machine, machine2);
+        store.put_voting_machine(machine.clone()).await.unwrap();
+        let store2 = FileStore::create(machine.clone(), "test2.json").await.unwrap();
+        let machine3 = store2.get_voting_machine().await.unwrap();
+        assert_eq!(machine, machine3);
+    }
+
+    #[tokio::test]
+    async fn verifie_conservation_fichier_entre_deux_instaciations_de_filstore(){
+        let candidates = vec![Candidate("A".to_string()), Candidate("B".to_string())];
+        let machine = VotingMachine::new(candidates);
+        let mut store = FileStore::create(machine.clone(), "test.json").await.unwrap();
+        let machine2 = store.get_voting_machine().await.unwrap();
+        assert_eq!(machine, machine2);
+        let mut store2 = FileStore::create(machine.clone(), "test.json").await.unwrap();
+        let machine3 = store2.get_voting_machine().await.unwrap();
+        assert_eq!(machine, machine3);
+
+    }
+}
