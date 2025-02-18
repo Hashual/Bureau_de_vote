@@ -1,6 +1,16 @@
-use crate::{configuration::Configuration, domain::{BallotPaper, Candidate, VoteOutcome, Voter, VotingMachine}, storage::Storage, storages::memory::MemoryStore};
+use crate::{configuration::Configuration, domain::{BallotPaper, Candidate, VoteOutcome, Voter, VotingMachine}, storage::Storage, storages::{file::FileStore, memory::MemoryStore}};
 
-pub async fn run_app(configuration: Configuration) -> anyhow::Result<()>{
+pub async fn run_app(configuration: Configuration) -> anyhow::Result<()> {
+    match configuration.storage {
+        crate::configuration::StorageType::File => {handle_lines::<FileStore>(configuration).await},
+        crate::configuration::StorageType::Memory => {handle_lines::<MemoryStore>(configuration).await},
+    }
+    
+}
+
+
+
+pub async fn handle_lines<Store: Storage>(configuration: Configuration) -> anyhow::Result<()>{
 
     let mut candidats: Vec<Candidate> =  vec![];
     
@@ -9,7 +19,7 @@ pub async fn run_app(configuration: Configuration) -> anyhow::Result<()>{
     }
     
     let votingMachine_init = VotingMachine::new(candidats);
-    let mut memory  = MemoryStore::new(votingMachine_init).await?; 
+    let mut memory  = Store::new(votingMachine_init).await?; 
 
     loop {
         let mut votingMachine = memory.get_voting_machine().await?;
@@ -69,6 +79,7 @@ pub async fn run_app(configuration: Configuration) -> anyhow::Result<()>{
             },
             "store" => {
                 println!("Sauvegarde du vote en cours");
+
             },
 
             _ => {
